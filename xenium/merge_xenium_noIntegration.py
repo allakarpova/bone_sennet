@@ -26,9 +26,8 @@ def main(tsv_file):
         sample = row["Sample_ID"]
         xenium_path = row["Xenium"]
 
-        adata = sc.read_10x_h5(
-            xenium_path
-        )
+        adata = sc.read_10x_h5(f'{xenium_path}/cell_feature_matrix.h5')
+        
 
         adata.var_names_make_unique()
 
