@@ -50,7 +50,7 @@ def main(tsv_file, output_dir):
 
         sc.pp.filter_genes(
             adata,
-            min_counts=1
+            min_counts=10
         )
 
         adata_list.append(adata)
@@ -73,6 +73,7 @@ def main(tsv_file, output_dir):
             adata,
             theta=100
         )
+
     # ----------------------------
     # HVG by residual variance (top 2000)
     # ----------------------------
