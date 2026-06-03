@@ -52,11 +52,6 @@ def main(tsv_file, output_dir):
             min_counts=1
         )
 
-        sc.experimental.pp.normalize_pearson_residuals(
-            adata,
-            theta=100
-        )
-
         adata_list.append(adata)
 
     # ----------------------------
@@ -70,12 +65,33 @@ def main(tsv_file, output_dir):
     )
 
     # ----------------------------
+    # Normalize with pearson residuals aka SCTransform
+    # ----------------------------
+
+    sc.experimental.pp.normalize_pearson_residuals(
+            adata,
+            theta=100
+        )
+    # ----------------------------
+    # HVG by residual variance (top 2000)
+    # ----------------------------
+
+    X = adata.X if isinstance(adata.X, np.ndarray) else adata.X.toarray()
+    gene_var = np.var(X, axis=0)
+    top_idx = np.argsort(gene_var)[::-1][:2000]
+    hvg_mask = np.zeros(adata.shape[1], dtype=bool)
+    hvg_mask[top_idx] = True
+    adata.var['highly_variable'] = hvg_mask
+    print(f'HVGs: {hvg_mask.sum()} / {adata.shape[1]}')
+
+    # ----------------------------
     # PCA / clustering / UMAP
     # ----------------------------
 
-    sc.pp.pca(
+    sc.tl.pca(
         adata,
-        n_comps=30
+        n_comps=30,
+        mask_var='highly_variable'
     )
 
     sc.pp.neighbors(
