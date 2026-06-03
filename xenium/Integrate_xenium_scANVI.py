@@ -141,7 +141,7 @@ def main(tsv_file, output_dir):
     adata_scvi = adata.copy()
     adata_scvi.X = adata_scvi.layers['counts'].copy()
 
-    scvi.model.SCVI.setup_anndata(adata_scvi, batch_key='sample_id')
+    scvi.model.SCVI.setup_anndata(adata_scvi, batch_key='Sample_ID')
     vae = scvi.model.SCVI(adata_scvi, n_latent=30, n_layers=2)
     vae.train(max_epochs=10, batch_size=512, accelerator='gpu') # if you have GPU which should be 10-15x faster, you need to specify it: vae.train(max_epochs=10, batch_size=512, accelerator='gpu')
 
