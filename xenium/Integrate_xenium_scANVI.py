@@ -44,6 +44,9 @@ def main(tsv_file, output_dir):
 
         adata.obs["Sample_ID"] = sample
 
+        # Prefix cell barcodes by sample_id so obs_names are unique across samples
+        adata.obs_names = pd.Index([f"{sample}_{n}" for n in adata.obs_names])
+        
         sc.pp.filter_cells(
             adata,
             min_counts=1
@@ -65,7 +68,7 @@ def main(tsv_file, output_dir):
         join="inner",
         index_unique="-"
     )
-    
+
     sc.pp.filter_cells(
         adata,
         min_counts=1
