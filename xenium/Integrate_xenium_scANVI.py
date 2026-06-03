@@ -4,7 +4,9 @@ from pathlib import Path
 import pandas as pd
 import scanpy as sc
 import anndata as ad
-
+import numpy as np
+import re
+import scvi
 
 def main(tsv_file, output_dir):
 
