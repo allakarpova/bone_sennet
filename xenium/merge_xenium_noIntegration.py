@@ -1,10 +1,18 @@
 import argparse
+from pathlib import Path
+
 import pandas as pd
 import scanpy as sc
 import anndata as ad
 
 
-def main(tsv_file):
+def main(tsv_file, output_dir):
+
+    output_dir = Path(output_dir)
+    output_dir.mkdir(
+        parents=True,
+        exist_ok=True
+    )
 
     # ----------------------------
     # Read sample sheet
@@ -24,10 +32,11 @@ def main(tsv_file):
     for _, row in samples.iterrows():
 
         sample = row["Sample_ID"]
-        xenium_path = row["Xenium"]
+        xenium_dir = Path(row["Xenium"])
 
-        adata = sc.read_10x_h5(f'{xenium_path}/cell_feature_matrix.h5')
-        
+        adata = sc.read_10x_h5(
+            xenium_dir / "cell_feature_matrix.h5"
+        )
 
         adata.var_names_make_unique()
 
@@ -82,20 +91,22 @@ def main(tsv_file):
     sc.tl.leiden(
         adata,
         resolution=0.5,
-        key_added="cluster"
+        key_added="leiden"
     )
 
     # ----------------------------
-    # Save outputs
+    # Save
     # ----------------------------
 
     adata.write(
-        "merged_xenium_pearson_umap.h5ad"
+        output_dir / "merged_xenium_pearson_umap.h5ad"
     )
+
+    sc.settings.figdir = str(output_dir)
 
     sc.pl.umap(
         adata,
-        color="cluster",
+        color="leiden",
         save="_clusters.png"
     )
 
@@ -111,12 +122,22 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "tsv",
-        help="TSV with Sample_ID and Xenium columns"
+        "-i",
+        "--input",
+        required=True,
+        help="Input TSV with Sample_ID and Xenium columns"
+    )
+
+    parser.add_argument(
+        "-o",
+        "--output",
+        required=True,
+        help="Output directory"
     )
 
     args = parser.parse_args()
 
     main(
-        args.tsv
+        args.input,
+        args.output
     )
