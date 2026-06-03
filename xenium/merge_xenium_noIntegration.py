@@ -70,12 +70,13 @@ def main(tsv_file, output_dir):
     # ----------------------------
     # Normalize with pearson residuals aka SCTransform
     # ----------------------------
-
+    print("NaNs before pearson:", np.isnan(adata.X.data).sum())
+    
     sc.experimental.pp.normalize_pearson_residuals(
             adata,
             theta=100
         )
-
+    print("NaNs after pearson:", np.isnan(adata.X.data).sum())
     # ----------------------------
     # HVG by residual variance (top 2000)
     # ----------------------------
