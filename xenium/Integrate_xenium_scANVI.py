@@ -65,6 +65,16 @@ def main(tsv_file, output_dir):
         join="inner",
         index_unique="-"
     )
+    
+    sc.pp.filter_cells(
+        adata,
+        min_counts=1
+    )
+
+    sc.pp.filter_genes(
+        adata,
+        min_counts=10
+    )
 
     # ----------------------------
     # Normalize with pearson residuals aka SCTransform
