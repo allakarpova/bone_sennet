@@ -25,7 +25,7 @@ def main(tsv_file, output_dir):
     )
 
     # ----------------------------
-    # Load + normalize each sample
+    # Load each sample
     # ----------------------------
 
     adata_list = []
@@ -42,6 +42,9 @@ def main(tsv_file, output_dir):
         adata.var_names_make_unique()
 
         adata.obs["Sample_ID"] = sample
+
+        # Prefix cell barcodes by sample_id so obs_names are unique across samples
+        adata.obs_names = pd.Index([f"{sample}_{n}" for n in adata.obs_names])
 
         sc.pp.filter_cells(
             adata,
@@ -61,8 +64,7 @@ def main(tsv_file, output_dir):
 
     adata = ad.concat(
         adata_list,
-        join="inner",
-        index_unique="-"
+        join="inner"
     )
 
     # ----------------------------
