@@ -76,7 +76,10 @@ def main(tsv_file, output_dir):
         adata,
         min_counts=10
     )
-    
+
+    # Keep filtered raw counts for SCVI/scANVI later on.
+    adata.layers["counts"] = adata.X.copy()
+
     # ----------------------------
     # Normalize with pearson residuals aka SCTransform
     # ----------------------------
