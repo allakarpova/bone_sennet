@@ -55,7 +55,7 @@ def main(tsv_file, output_dir):
 
         sc.pp.filter_genes(
             adata,
-            min_counts=1
+            min_counts=10
         )
 
         adata_list.append(adata)
@@ -83,7 +83,7 @@ def main(tsv_file, output_dir):
     # Keep filtered raw counts for SCVI/scANVI. Pearson residuals are useful for
     # PCA/clustering, but feeding residualized values into SCVI can create NaNs.
     adata.layers["counts"] = adata.X.copy()
-
+    logging.info('saved raw counts')
     # ----------------------------
     # Normalize with pearson residuals aka SCTransform
     # ----------------------------
