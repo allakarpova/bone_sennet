@@ -41,9 +41,10 @@ def main(input_file, output_dir):
     # ----------------------------
     # scANVI integration
     # ----------------------------
-
+    adata.X = adata.layers['counts'].copy()
+    adata.layers.pop("counts")
     adata_scvi = adata.copy()
-    adata_scvi.X = adata_scvi.layers['counts'].copy()
+    
 
     if hasattr(adata_scvi.X, "data"):
         if not np.isfinite(adata_scvi.X.data).all():
