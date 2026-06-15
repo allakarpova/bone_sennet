@@ -25,6 +25,7 @@ def main(input_file, output_dir):
         input_file
     )
 
+    logging.info('Read in input finished')
     # ----------------------------
     # filter out small clusters
     # ----------------------------
@@ -44,7 +45,7 @@ def main(input_file, output_dir):
     adata.X = adata.layers['counts'].copy()
     adata.layers.pop("counts")
     adata_scvi = adata.copy()
-    
+    logging.info('adata copy for scvi created')
 
     if hasattr(adata_scvi.X, "data"):
         if not np.isfinite(adata_scvi.X.data).all():
