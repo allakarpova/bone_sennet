@@ -65,7 +65,7 @@ def main(input_file, output_dir):
 
     sc.pp.neighbors(adata, use_rep='X_scANVI', n_neighbors=15, metric='euclidean')
     sc.tl.umap(adata, min_dist=0.05)
-    sc.tl.leiden(adata, resolution=1.0, key_added='leiden_scanvi')
+    sc.tl.leiden(adata, resolution=0.5, key_added='leiden_scanvi')
 
     adata.obsm['X_umap_scanvi'] = adata.obsm['X_umap'].copy()
     logging.info('scANVI done')
