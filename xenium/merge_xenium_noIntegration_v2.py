@@ -124,6 +124,8 @@ def main(tsv_file, output_dir):
 
     sc.tl.leiden(
         adata,
+        n_iterations=2,
+        flavor="igraph",
         resolution=0.5,
         key_added="leiden"
     )
