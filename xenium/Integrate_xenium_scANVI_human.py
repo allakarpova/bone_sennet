@@ -121,6 +121,8 @@ def main(tsv_file, output_dir):
 
     sc.tl.leiden(
         adata,
+        n_iterations=2,
+        flavor="igraph",
         resolution=0.5,
         key_added="leiden"
     )
@@ -151,19 +153,49 @@ def main(tsv_file, output_dir):
     elif not np.isfinite(adata_scvi.X).all():
         raise ValueError("Raw count layer contains NaN or infinite values before SCVI setup.")
 
-    scvi.model.SCVI.setup_anndata(adata_scvi, batch_key='Sample_ID')
-    vae = scvi.model.SCVI(adata_scvi, n_latent=30, n_layers=2)
-    vae.train(max_epochs=10, batch_size=512, accelerator='gpu') # if you have GPU which should be 10-15x faster, you need to specify it: vae.train(max_epochs=10, batch_size=512, accelerator='gpu')
+    scvi.model.SCVI.setup_anndata(
+        adata_scvi, 
+        batch_key='Sample_ID')
+    
+    vae = scvi.model.SCVI(
+        adata_scvi, 
+        n_latent=30, 
+        n_layers=2)
+
+    vae.train(
+        max_epochs=10, 
+        batch_size=512, 
+        accelerator='gpu') # if you have GPU which should be 10-15x faster, you need to specify it: vae.train(max_epochs=10, batch_size=512, accelerator='gpu')
 
     adata_scvi.obs['leiden_init'] = adata.obs['leiden_init'].values
-    scanvi_model = scvi.model.SCANVI.from_scvi_model(vae, labels_key='leiden_init', unlabeled_category='Unknown')
-    scanvi_model.train(max_epochs=10, batch_size=512, accelerator='gpu')
+    scanvi_model = scvi.model.SCANVI.from_scvi_model(
+        vae, 
+        labels_key='leiden_init', 
+        unlabeled_category='Unknown')
+
+    scanvi_model.train(
+        max_epochs=10, 
+        batch_size=512, 
+        accelerator='gpu')
 
     adata.obsm['X_scANVI'] = scanvi_model.get_latent_representation()
 
-    sc.pp.neighbors(adata, use_rep='X_scANVI', n_neighbors=15, metric='euclidean')
-    sc.tl.umap(adata, min_dist=0.05)
-    sc.tl.leiden(adata, resolution=1.0, key_added='leiden_scanvi')
+    sc.pp.neighbors(
+        adata, 
+        use_rep='X_scANVI', 
+        n_neighbors=15, 
+        metric='euclidean')
+
+    sc.tl.umap(
+        adata, 
+        min_dist=0.05)
+
+    sc.tl.leiden(
+        adata, 
+        n_iterations=2,
+        flavor="igraph",
+        resolution=0.5, 
+        key_added='leiden_scanvi')
 
     adata.obsm['X_umap_scanvi'] = adata.obsm['X_umap'].copy()
     logging.info('scANVI done')
