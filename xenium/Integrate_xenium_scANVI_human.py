@@ -67,7 +67,7 @@ def main(tsv_file, output_dir):
     adata = ad.concat(
         adata_list,
         join="inner",
-        index_unique="-"
+        index_unique=None
     )
 
     sc.pp.filter_cells(
@@ -128,7 +128,7 @@ def main(tsv_file, output_dir):
     )
 
     # ----------------------------
-    # filter out small clusters
+    # filter out small clusters - might not be needed for 477 data
     # ----------------------------
 
     # I also filtered small clusters to shrink scANVI classifier. Feel free to experiment with it as well
